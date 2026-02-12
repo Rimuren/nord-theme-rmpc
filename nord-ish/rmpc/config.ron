@@ -1,153 +1,222 @@
+// ==========================================================
+// rmpc config.ron
+// Minimal GNOME layout with album art + cava
+// Designed for personal use but readable for others
+// ==========================================================
+
 #![enable(implicit_some)]
 #![enable(unwrap_newtypes)]
 #![enable(unwrap_variant_newtypes)]
+
 (
+    // ------------------------------------------------------
+    // MPD CONNECTION
+    // ------------------------------------------------------
+    // Path to MPD socket
+    // Default for many Linux setups:
+    // ~/.config/mpd/socket
     address: "~/.config/mpd/socket",
+
+    // MPD password (if you use one)
     password: None,
+
+    // Optional cache dir for rmpc
     cache_dir: None,
+
+    // Run script on song change (unused)
     on_song_change: None,
+
+    // ------------------------------------------------------
+    // UI / BEHAVIOR
+    // ------------------------------------------------------
     volume_step: 1,
     max_fps: 30,
+
+    // Lines kept visible above/below cursor
     scrolloff: 0,
+
     wrap_navigation: false,
     enable_mouse: true,
+
+    // Hot reload config when saved
     enable_config_hot_reload: true,
+
+    // Status refresh interval
     status_update_interval_ms: 1000,
+
     rewind_to_start_sec: None,
+
     reflect_changes_to_playlist: false,
     select_current_song_on_change: false,
+
+    // Sorting behavior
     browser_song_sort: [Disc, Track, Artist, Title],
     directories_sort: SortFormat(group_by_type: true, reverse: false),
 
+    // ------------------------------------------------------
+    // THEME
+    // ------------------------------------------------------
     theme_file: "~/.config/rmpc/themes/theme.ron",
     theme: Some("theme"),
-    
+
+    // ------------------------------------------------------
+    // ALBUM ART
+    // ------------------------------------------------------
     album_art: (
         method: Auto,
+
+        // Max image size
         max_size_px: (width: 1200, height: 1200),
+
+        // Disable remote fetching
         disabled_protocols: ["http://", "https://"],
+
         vertical_align: Center,
         horizontal_align: Center,
     ),
 
-    // Uncomment cava to use it
-    // see rmpc documentation fo more information
+    // ------------------------------------------------------
+    // CAVA VISUALIZER
+    // ------------------------------------------------------
+    // Enabled by default in this config.
+    // If you don't want cava:
+    // - comment this entire block
+    // - use the "no cava" layout in tabs section
+    cava: (
+        framerate: 45,
+        autosens: true,
+        sensitivity: 70,
 
-	cava: (
-	    framerate: 45,
-	    autosens: true,
-	    sensitivity: 70,
-	    
-	    lower_cutoff_freq: 50,
-	    higher_cutoff_freq: 10000,
+        lower_cutoff_freq: 50,
+        higher_cutoff_freq: 10000,
 
-	    input: (
-	        method: Fifo,
-	        source: "/tmp/mpd.fifo",
-	        sample_rate: 44100,
-	        channels: 2,
-	        sample_bits: 16,
-	    ),
+        // Input from MPD FIFO
+        input: (
+            method: Fifo,
+            source: "/tmp/mpd.fifo",
+            sample_rate: 44100,
+            channels: 2,
+            sample_bits: 16,
+        ),
 
-	    output: (
-	    	method: noncurses,
-	    	orientation: bottom,
-	    	channels: mono,
-	    	mono_option: average,
-	    	synchronized_sync: 1,
-	    ),
+        output: (
+            method: noncurses,
+            orientation: bottom,
+            channels: mono,
+            mono_option: average,
+            synchronized_sync: 1,
+        ),
 
-	    smoothing: (
-	        noise_reduction: 65,
-	        monstercat: true,
-	        waves: false,
-	    ),
+        smoothing: (
+            noise_reduction: 65,
+            monstercat: true,
+            waves: false,
+        ),
 
-	    eq: [
-	        1.0, 1.0, 1.0, 1.0, 1.0,
-	        1.0, 1.0, 1.0, 1.0, 1.0,
-	    ]
-	),
+        // EQ (10 bands)
+        eq: [
+            1.0, 1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0, 1.0, 1.0,
+        ]
+    ),
 
-
-    // all keybinding bellow are default from rmpc
+    // ------------------------------------------------------
+    // KEYBINDS
+    // Mostly default rmpc keybinds
+    // ------------------------------------------------------
     keybinds: (
         global: {
             ":":       CommandMode,
             ",":       VolumeDown,
-            "s":       Stop,
             ".":       VolumeUp,
+            "s":       Stop,
+            "p":       TogglePause,
+            ">":       NextTrack,
+            "<":       PreviousTrack,
+
             "<Tab>":   NextTab,
             "<S-Tab>": PreviousTab,
-            "1":       SwitchToTab("Queue"),
-            "2":       SwitchToTab("Directories"),
-            "3":       SwitchToTab("Artists"),
-            "4":       SwitchToTab("Album Artists"),
-            "5":       SwitchToTab("Albums"),
-            "6":       SwitchToTab("Playlists"),
-            "7":       SwitchToTab("Search"),
-            "q":       Quit,
-            ">":       NextTrack,
-            "p":       TogglePause,
-            "<":       PreviousTrack,
-            "f":       SeekForward,
-            "z":       ToggleRepeat,
-            "x":       ToggleRandom,
-            "c":       ToggleConsume,
-            "v":       ToggleSingle,
-            "b":       SeekBack,
-            "~":       ShowHelp,
-            "u":       Update,
-            "U":       Rescan,
-            "I":       ShowCurrentSongInfo,
-            "O":       ShowOutputs,
-            "P":       ShowDecoders,
-            "R":       AddRandom,
+
+            "1": SwitchToTab("Queue"),
+            "2": SwitchToTab("Directories"),
+            "3": SwitchToTab("Artists"),
+            "4": SwitchToTab("Album Artists"),
+            "5": SwitchToTab("Albums"),
+            "6": SwitchToTab("Playlists"),
+            "7": SwitchToTab("Search"),
+
+            "q": Quit,
+
+            "f": SeekForward,
+            "b": SeekBack,
+
+            "z": ToggleRepeat,
+            "x": ToggleRandom,
+            "c": ToggleConsume,
+            "v": ToggleSingle,
+
+            "~": ShowHelp,
+            "u": Update,
+            "U": Rescan,
+
+            "I": ShowCurrentSongInfo,
+            "O": ShowOutputs,
+            "P": ShowDecoders,
+            "R": AddRandom,
         },
+
         navigation: {
-            "k":         Up,
-            "j":         Down,
-            "h":         Left,
-            "l":         Right,
-            "<Up>":      Up,
-            "<Down>":    Down,
-            "<Left>":    Left,
-            "<Right>":   Right,
-            "<C-k>":     PaneUp,
-            "<C-j>":     PaneDown,
-            "<C-h>":     PaneLeft,
-            "<C-l>":     PaneRight,
-            "<C-u>":     UpHalf,
-            "N":         PreviousResult,
-            "a":         Add,
-            "A":         AddAll,
-            "r":         Rename,
-            "n":         NextResult,
-            "g":         Top,
-            "<Space>":   Select,
-            "<C-Space>": InvertSelection,
-            "G":         Bottom,
-            "<CR>":      Confirm,
-            "i":         FocusInput,
-            "J":         MoveDown,
-            "<C-d>":     DownHalf,
-            "/":         EnterSearch,
-            "<C-c>":     Close,
-            "<Esc>":     Close,
-            "K":         MoveUp,
-            "D":         Delete,
-            "B":         ShowInfo,
+            "k": Up,
+            "j": Down,
+            "h": Left,
+            "l": Right,
+
+            "<Up>": Up,
+            "<Down>": Down,
+            "<Left>": Left,
+            "<Right>": Right,
+
+            "<C-k>": PaneUp,
+            "<C-j>": PaneDown,
+            "<C-h>": PaneLeft,
+            "<C-l>": PaneRight,
+
+            "g": Top,
+            "G": Bottom,
+
+            "<CR>": Confirm,
+            "<Esc>": Close,
+            "<C-c>": Close,
+
+            "/": EnterSearch,
+            "<Space>": Select,
+
+            "a": Add,
+            "A": AddAll,
+            "d": Delete,
+            "D": Delete,
+            "r": Rename,
+
+            "J": MoveDown,
+            "K": MoveUp,
+
+            "B": ShowInfo,
         },
+
         queue: {
-            "D":       DeleteAll,
-            "<CR>":    Play,
-            "<C-s>":   Save,
-            "a":       AddToPlaylist,
-            "d":       Delete,
-            "C":       JumpToCurrent,
-            "X":       Shuffle,
+            "<CR>": Play,
+            "a": AddToPlaylist,
+            "d": Delete,
+            "D": DeleteAll,
+            "<C-s>": Save,
+            "C": JumpToCurrent,
+            "X": Shuffle,
         },
     ),
+
+    // ------------------------------------------------------
+    // SEARCH
+    // ------------------------------------------------------
     search: (
         case_sensitive: false,
         mode: Contains,
@@ -161,14 +230,25 @@
             (value: "genre",       label: "Genre"),
         ],
     ),
+
+    // ------------------------------------------------------
+    // ARTIST VIEW
+    // ------------------------------------------------------
     artists: (
         album_display_mode: SplitByDate,
         album_sort_by: Date,
     ),
+
+    // ------------------------------------------------------
+    // TABS / LAYOUT
+    // ------------------------------------------------------
     tabs: [
-/*    
-    // Default, without cava (comment or uncomment this part if you want to use it), use one cava or not
-		(
+
+        // --------------------------------------------------
+        // LAYOUT WITHOUT CAVA
+        // Uncomment if you do NOT want cava
+        /*
+        (
             name: "Playing",
             pane: Split(
                 direction: Horizontal,
@@ -178,11 +258,12 @@
                 ],
             ),
         ),
-*/        
+        */
 
-
-	// Use or Uncomment this bellow if you want to use cava (comment the one on above if you want to use the cava one)
-		(
+        // --------------------------------------------------
+        // LAYOUT WITH CAVA (DEFAULT)
+        // Comment this if using the no-cava layout above
+        (
             name: "Playing",
             pane: Split(
                 direction: Horizontal,
@@ -199,19 +280,8 @@
             ),
         ),
 
-
-        (
-            name: "Directories",
-            pane: Pane(Directories),
-        ),
-        (
-            name: "Artists",
-            pane: Pane(Artists),
-        ),
-        (
-            name: "Playlists",
-            pane: Pane(Playlists),
-        ),
+        (name: "Directories", pane: Pane(Directories)),
+        (name: "Artists", pane: Pane(Artists)),
+        (name: "Playlists", pane: Pane(Playlists)),
     ],
 )
-
