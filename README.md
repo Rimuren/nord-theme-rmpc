@@ -3,6 +3,7 @@
 Minimal and functional rmpc layout with album art + cava pane.
 
 ## Preview
+![preview](nord-ish/rmpc_1.png)
 
 **Layout**
 
